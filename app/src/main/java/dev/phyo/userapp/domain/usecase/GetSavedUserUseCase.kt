@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetSavedUserUseCase @Inject constructor(private val userRepository: IUserRepository) {
-    suspend operator fun invoke(): Flow<DataResult<List<User>>>{
+     operator fun invoke(): Flow<DataResult<List<User>>>{
         return flow {
-            userRepository.getSavedUsers().collect{
+            userRepository.getUsers().collect{
                 when(it){
                     is DataResult.Success -> {
                         emit(DataResult.Success(it.data))

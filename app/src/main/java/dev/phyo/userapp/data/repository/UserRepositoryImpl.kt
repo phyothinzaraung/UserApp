@@ -1,10 +1,10 @@
 package dev.phyo.userapp.data.repository
 
-import android.provider.ContactsContract.Data
 import dev.phyo.userapp.data.local.UserDao
-import dev.phyo.userapp.data.local.UserEntity
 import dev.phyo.userapp.data.remote.model.User
 import dev.phyo.userapp.data.remote.UserHelper
+import dev.phyo.userapp.domain.mapper.toDomainModel
+import dev.phyo.userapp.domain.mapper.toEntityModel
 import dev.phyo.userapp.domain.repository.IUserRepository
 import dev.phyo.userapp.util.DataResult
 import kotlinx.coroutines.flow.Flow
@@ -14,46 +14,38 @@ import kotlinx.coroutines.flow.flow
 class UserRepositoryImpl(
     private val userHelper: UserHelper,
     private val userDao: UserDao
-): IUserRepository {
+) : IUserRepository {
 
-    override suspend fun getAndSaveUser() {
-        try {
-            userHelper.getUsers().let { response ->
-                if (response.isSuccessful){
-                    response.body()?.data?.let { users ->
-                        val userEntities = users.map {
-                            UserEntity(
-                                it.id,
-                                it.email,
-                                it.first_name,
-                                it.last_name,
-                                it.avatar
-                            )
-                        }
-                        userDao.insertUser(userEntities)
-                    }
-                }
-            }
-        }catch (e: Exception){
-            throw Exception("Error fetching or saving data: ${e.message}")
-        }
-
-    }
-
-    override suspend fun getSavedUsers(): Flow<DataResult<List<User>>> {
-        return flow {
+    override suspend fun getUsers(): Flow<DataResult<List<User>>> {
+        return flow<DataResult<List<User>>> {
             emit(DataResult.Loading())
-            with(userDao.getUsers()){
-                emit(DataResult.Success(this.map { User(
-                    it.id,
-                    it.email,
-                    it.first_name,
-                    it.last_name,
-                    it.avatar
-                ) }))
+
+            userDao.getUsers()
+                .takeIf { it.isNotEmpty() }
+                ?.let { localData ->
+                    emit(DataResult.Success(localData.toDomainModel()))
+                    return@flow
+                }
+
+            runCatching {
+                userHelper.getUsers()
+            }.onSuccess { response ->
+                if (response.isSuccessful){
+                    val users = response.body()?.data.orEmpty()
+                    if (users.isNotEmpty()){
+                        userDao.insertUser(users.toEntityModel())
+                        emit(DataResult.Success(users))
+                    }else{
+                        emit(DataResult.Error("API returned empty Data"))
+                    }
+                }else{
+                    emit(DataResult.Error("API error: ${response.message()}"))
+                }
+            }.onFailure {
+                emit(DataResult.Error("Error fetching data: ${it.message}"))
             }
         }.catch {
-            emit(DataResult.Error(it.message))
+            emit(DataResult.Error("Unexpected Error: ${it.message}"))
         }
     }
 }
