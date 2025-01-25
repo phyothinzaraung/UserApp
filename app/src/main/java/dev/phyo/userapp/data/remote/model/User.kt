@@ -1,4 +1,4 @@
-package dev.phyo.userapp.data.model
+package dev.phyo.userapp.data.remote.model
 
 data class User(
     val id: Int,

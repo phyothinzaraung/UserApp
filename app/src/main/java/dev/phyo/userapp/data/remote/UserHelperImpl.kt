@@ -1,6 +1,6 @@
 package dev.phyo.userapp.data.remote
 
-import dev.phyo.userapp.data.model.UserResponse
+import dev.phyo.userapp.data.remote.model.UserResponse
 import retrofit2.Response
 
 class UserHelperImpl(private val userService: UserService): UserHelper {

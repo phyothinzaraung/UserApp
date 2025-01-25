@@ -4,8 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dev.phyo.userapp.data.local.UserDao
 import dev.phyo.userapp.data.remote.UserHelper
-import dev.phyo.userapp.data.remote.repository.UserRepositoryImpl
+import dev.phyo.userapp.data.repository.UserRepositoryImpl
 import dev.phyo.userapp.domain.repository.IUserRepository
 
 @Module
@@ -13,5 +14,5 @@ import dev.phyo.userapp.domain.repository.IUserRepository
 object RepositoryModule {
 
     @Provides
-    fun providesUserRepository(userHelper: UserHelper): IUserRepository = UserRepositoryImpl(userHelper)
+    fun providesUserRepository(userHelper: UserHelper, userDao: UserDao): IUserRepository = UserRepositoryImpl(userHelper, userDao)
 }

@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
-import dev.phyo.userapp.data.model.User
+import dev.phyo.userapp.data.remote.model.User
 import dev.phyo.userapp.presentation.viewmodel.UserViewModel
 import dev.phyo.userapp.ui.theme.UserAppTheme
 
