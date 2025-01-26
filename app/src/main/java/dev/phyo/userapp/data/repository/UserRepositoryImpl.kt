@@ -5,6 +5,7 @@ import dev.phyo.userapp.data.remote.model.User
 import dev.phyo.userapp.data.remote.UserHelper
 import dev.phyo.userapp.domain.mapper.toDomainModel
 import dev.phyo.userapp.domain.mapper.toEntityModel
+import dev.phyo.userapp.domain.mapper.toUser
 import dev.phyo.userapp.domain.repository.IUserRepository
 import dev.phyo.userapp.util.DataResult
 import kotlinx.coroutines.flow.Flow
@@ -46,6 +47,20 @@ class UserRepositoryImpl(
             }
         }.catch {
             emit(DataResult.Error("Unexpected Error: ${it.message}"))
+        }
+    }
+
+    override suspend fun getUserById(userId: Int): Flow<DataResult<User>> {
+        return flow {
+            emit(DataResult.Loading())
+            try {
+                userDao.getUserById(userId)?.let {
+                    emit(DataResult.Success(it.toUser()))
+                }
+            }catch (e: Exception){
+                emit(DataResult.Error(e.message ?: "Unknown Error"))
+            }
+
         }
     }
 }

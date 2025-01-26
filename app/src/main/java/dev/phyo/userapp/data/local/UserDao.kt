@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import dev.phyo.userapp.data.remote.model.User
 
 @Dao
 interface UserDao {
@@ -13,4 +12,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users")
     suspend fun getUsers(): List<UserEntity>
+
+    @Query("SELECT * FROM users where id = :userId")
+    suspend fun getUserById(userId: Int): UserEntity?
 }

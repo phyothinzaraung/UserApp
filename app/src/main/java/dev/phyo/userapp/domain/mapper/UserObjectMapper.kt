@@ -10,3 +10,7 @@ internal fun List<UserEntity>.toDomainModel(): List<User>{
 internal fun List<User>.toEntityModel(): List<UserEntity>{
     return this.map { UserEntity(it.id, it.email, it.first_name, it.last_name, it.avatar) }
 }
+
+internal fun UserEntity.toUser(): User {
+    return User(this.id, this.email, this.first_name, this.last_name, this.avatar)
+}

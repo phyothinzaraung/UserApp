@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
     suspend fun getUsers(): Flow<DataResult<List<User>>>
+    suspend fun getUserById(userId: Int): Flow<DataResult<User>>
 }
